@@ -26,15 +26,21 @@ town as (
     from small_area
 ),
 
--- 地価公示・地価調査: 地点を位置で町丁目に入れる。同じ地点が年ごとに並ぶので、位置だけ先に解く
+-- 地価公示・地価調査。mart_land_prices も HTTPS で読み 3 か所から使うので、使う列を 1 回だけ読む
+land_price_row as materialized (
+    select longitude, latitude, year, current_price, change_rate, use_category
+    from reinfolib.main.mart_land_prices
+),
+
+-- 地点を位置で町丁目に入れる。同じ地点が年ごとに並ぶので、位置だけ先に解く
 point_location as (
     select distinct longitude, latitude
-    from reinfolib.main.mart_land_prices
+    from land_price_row
     where longitude is not null and latitude is not null
 ),
 
 point_town as (
-    select p.longitude, p.latitude, any_value(s.town_code) as town_code
+    select p.longitude, p.latitude, min(s.town_code) as town_code
     from point_location p
     join small_area s on st_contains(s.geometry, st_point(p.longitude, p.latitude))
     group by p.longitude, p.latitude
@@ -52,7 +58,7 @@ land as (
         median(l.current_price) filter (where l.use_category = '住宅地') as residential_price_median,
         count(*) filter (where l.use_category = '商業地') as commercial_point_count,
         median(l.current_price) filter (where l.use_category = '商業地') as commercial_price_median
-    from reinfolib.main.mart_land_prices l
+    from land_price_row l
     join point_town pt using (longitude, latitude)
     where l.current_price > 0
     group by pt.town_code, l.year
@@ -71,8 +77,9 @@ trade as (
       and coalesce(district_name, '') not in ('', '（大字なし）')
 ),
 
+-- そろえると空になる地区名 (「一丁目」だけなど) は、starts_with で市区町村の町すべてに当たるので除く
 district as (
-    select distinct city_code, district_name from trade
+    select distinct city_code, district_name from trade where district_name <> ''
 ),
 
 -- 地区名が町の名前と同じならその町に、無ければ地区名で始まる町すべてに入れる
@@ -94,7 +101,7 @@ district_town as (
 ),
 
 years as (
-    select distinct year from reinfolib.main.mart_land_prices
+    select distinct year from land_price_row
     union
     select distinct year from trade
 ),
