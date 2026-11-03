@@ -1,0 +1,60 @@
+# この dataset.yml は fdl commit が読む（FDL の dataset.json を YAML で書いたもの）。
+# 表の説明は models/ の *.table.yml に書く。表と列の型・NULL・行数は fdl commit がカタログから埋める。
+# Queria だけの項目（テーマ・カバー・列の意味）は extensions.queria に書く。
+name: area_stats
+title: 地域ごとの指標
+description: |-
+  町丁目・メッシュ・市区町村などの地域ごとの指標。地点の値を地域にまとめたもの、名前で地域コードに当て直したもの、
+  いくつかのデータセットを合わせたものを置く。元のデータセットがすでに地域コードで持っている値は置かない。
+  「不動産情報ライブラリ」（国土交通省）、「国勢調査 町丁・字等別境界データ」（総務省統計局）を加工して作成。
+  元にした Queria のデータセットは reinfolib・e_stat。
+keywords:
+  - 地域
+  - 町丁目
+  - 小地域
+  - 地価
+homepage: https://github.com/queria-io/dataset-area-stats
+language: ja
+
+licenses:
+  - JP-GOV-STD-2.0
+
+sources:
+  - title: 不動産情報ライブラリ（国土交通省）
+    path: https://www.reinfolib.mlit.go.jp/
+  - title: 国勢調査 町丁・字等別境界データ（総務省統計局）
+    path: https://www.e-stat.go.jp/gis
+
+contributors:
+  - title: 国土交通省
+    path: https://www.mlit.go.jp/
+    roles: [rightsHolder]
+  - title: 総務省統計局
+    path: https://www.stat.go.jp/
+    roles: [rightsHolder]
+
+spatial_coverage: [JP]
+update_frequency: monthly
+
+schemas:
+  - name: small_area
+    title: 町丁目（国勢調査の小地域）
+
+extensions:
+  queria:
+    themes: [housing_land]
+    cover: 🗾
+    ai_context:
+      instructions: |
+        地域ごとの数字を地図で塗る、町丁目どうしを比べる、商圏に入る町丁目の相場を見るときに使う。
+        スキーマは地域の単位（small_area など）で、表はテーマごとに 1 つ。key_code は e_stat の
+        boundary.small_area と census 各表の key_code / area と同じなので、そのまま結合できる。
+        small_area.land_price は町丁目ごとの地価の目安で、1行が小地域×年。地価公示・地価調査の地点の
+        価格と土地の取引の㎡単価の中央値を町（key_code の先頭9桁）ごとにまとめ、同じ町の丁目に同じ値を入れる。
+        住宅地と商業地は桁が違うので residential_price_median / commercial_price_median を分けて見る。
+        取引の値はその年までの3年分。件数（land_point_count・trade_count）が少ない町は目安にしない。
+        個々の地点や取引を見るときは reinfolib の mart_land_prices・mart_trade_prices を使う。
+      synonyms: [地域統計, エリア指標, 町丁目別 地価, 地価 相場]
+      examples:
+        - 町丁目ごとの住宅地の地価を地図で塗りたい
+        - 駅の周りの町丁目の土地の相場を比べたい
