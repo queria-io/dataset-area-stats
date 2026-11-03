@@ -1,9 +1,9 @@
 {# 町丁目ごとの地価の目安。1 行が国勢調査の小地域 (e_stat.boundary.small_area) 1 つ × 1 年。
    地価公示・地価調査の地点も土地の取引も町丁目の数よりずっと少ないので、値は「町」
    (key_code の先頭 9 桁。丁目をまとめた単位) で集計し、同じ町の丁目には同じ値を入れる。
-   公示・調査の地点は位置で町に入れ、取引は地区名を町の名前に突き合わせる #}
+   公示・調査の地点は位置で町に入れ、取引は地区（大字・町）の町すべてに入れる (trade_district) #}
 
--- 公開中の e_stat を HTTPS で読むので、3 か所から使う境界は 1 回だけ読む
+-- 公開中の e_stat を HTTPS で読むので、2 か所から使う境界は 1 回だけ読む
 with small_area as materialized (
     select
         key_code,
@@ -11,19 +11,11 @@ with small_area as materialized (
         prefecture_code || city_code as city_code,
         left(key_code, 9) as town_code,
         area_name,
-        geometry,
-        {{ normalize_town_name("area_name") }} as town_name
+        geometry
     from e_stat.boundary.small_area
     -- 町丁・字等は 9 桁、その内訳は 11 桁。2 桁 (都道府県コードだけ) の行は名前の無い水面などで、
     -- 先頭 9 桁が町にならず、別の市区町村の形が 1 つの「町」にまとまってしまう
     where length(key_code) in (9, 11)
-),
-
-town as (
-    -- 1 つの町の内訳に別の名前が並ぶことがある (「新居町新居栄町」「新居町新居港町」など、
-    -- 4 つに 1 つの町)。名前を 1 つに決めず、どの名前でも町に当てる
-    select distinct town_code, city_code, town_name
-    from small_area
 ),
 
 -- 地価公示・地価調査。mart_land_prices も HTTPS で読み 3 か所から使うので、使う列を 1 回だけ読む
@@ -64,53 +56,20 @@ land as (
     group by pt.town_code, l.year
 ),
 
--- 土地の取引: ㎡単価を持つのは「宅地(土地)」だけ。建物込みの取引は土地の値段にならないので使わない
+-- 土地の取引: ㎡単価を持つのは「宅地(土地)」だけ。建物込みの取引は土地の値段にならないので使わない。
+-- 取引は位置を地区（大字・町）までしか持たないので、地区の町すべてに入れる（trade_district）
 trade as (
-    select
-        lpad(municipality_code, 5, '0') as city_code,
-        {{ normalize_town_name("district_name") }} as district_name,
-        year,
-        unit_price
+    select municipality_code, district_name, year, unit_price
     from reinfolib.main.mart_trade_prices
     where property_type = '宅地(土地)'
       and unit_price > 0
-      and coalesce(district_name, '') not in ('', '（大字なし）')
-),
-
--- そろえると空になる地区名 (「一丁目」だけなど) は、starts_with で市区町村の町すべてに当たるので除く
-district as (
-    select distinct city_code, district_name from trade where district_name <> ''
-),
-
--- 地区名が町の名前と同じならその町に、無ければ地区名で始まる町すべてに入れる
--- (「大久保町」の取引を「大久保町大窪」「大久保町西島」などへ)
-district_exact as (
-    select distinct d.city_code, d.district_name, t.town_code
-    from district d
-    join town t on t.city_code = d.city_code and t.town_name = d.district_name
-),
-
-district_prefix as (
-    -- 1 つの町に地区名で始まる名前が複数あっても、町には 1 回だけ入れる
-    select distinct d.city_code, d.district_name, t.town_code
-    from district d
-    join town t on t.city_code = d.city_code and starts_with(t.town_name, d.district_name)
-    anti join district_exact e on e.city_code = d.city_code and e.district_name = d.district_name
-    -- 「東」のような 1 文字の地区名や、多くの町に当たる地区名は関係ない町にまで広がるので使わない
-    where length(d.district_name) >= 2
 ),
 
 district_town as (
-    select * from district_exact
-    union all
-    select p.*
-    from district_prefix p
-    semi join (
-        select city_code, district_name
-        from district_prefix
-        group by all
-        having count(*) <= 5
-    ) k using (city_code, district_name)
+    select distinct municipality_code, district_name, town_code
+    from {{ ref('trade_district') }}
+    -- 同じ名前の大字・町が市区町村に複数あるときは、どちらの取引か決められないので使わない
+    where town_code is not null and oaza_count = 1
 ),
 
 years as (
@@ -127,7 +86,7 @@ trade_by_town as (
         count(*) as trade_count,
         median(tr.unit_price) as trade_unit_price_median
     from trade tr
-    join district_town dt using (city_code, district_name)
+    join district_town dt using (municipality_code, district_name)
     join years y on tr.year between y.year - 2 and y.year
     group by dt.town_code, y.year
 ),

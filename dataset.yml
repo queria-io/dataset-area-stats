@@ -6,8 +6,8 @@ title: 地域ごとの指標
 description: |-
   町丁目・メッシュ・市区町村などの地域ごとの指標。地点の値を地域にまとめたもの、名前で地域コードに当て直したもの、
   いくつかのデータセットを合わせたものを置く。元のデータセットがすでに地域コードで持っている値は置かない。
-  「不動産情報ライブラリ」（国土交通省）、「国勢調査 町丁・字等別境界データ」（総務省統計局）を加工して作成。
-  元にした Queria のデータセットは reinfolib・e_stat。
+  「不動産情報ライブラリ」（国土交通省）、「国勢調査 町丁・字等別境界データ」（総務省統計局）、「アドレス・ベース・レジストリ」（デジタル庁）を加工して作成。
+  元にした Queria のデータセットは reinfolib・e_stat・address_br・japan_address_code。
 keywords:
   - 地域
   - 町丁目
@@ -18,12 +18,15 @@ language: ja
 
 licenses:
   - JP-GOV-STD-2.0
+  - JP-DIGITAL-ADDRESS-BR
 
 sources:
   - title: 不動産情報ライブラリ（国土交通省）
     path: https://www.reinfolib.mlit.go.jp/
   - title: 国勢調査 町丁・字等別境界データ（総務省統計局）
     path: https://www.e-stat.go.jp/gis
+  - title: アドレス・ベース・レジストリ（デジタル庁）
+    path: https://dataset.address-br.digital.go.jp/
 
 contributors:
   - title: 国土交通省
@@ -31,6 +34,9 @@ contributors:
     roles: [rightsHolder]
   - title: 総務省統計局
     path: https://www.stat.go.jp/
+    roles: [rightsHolder]
+  - title: デジタル庁
+    path: https://www.digital.go.jp/
     roles: [rightsHolder]
 
 spatial_coverage: [JP]
@@ -54,6 +60,9 @@ extensions:
         住宅地と商業地は桁が違うので residential_price_median / commercial_price_median を分けて見る。
         取引の値はその年までの3年分。件数（land_point_count・trade_count）が少ない町は目安にしない。
         個々の地点や取引を見るときは reinfolib の mart_land_prices・mart_trade_prices を使う。
+        small_area.trade_district は取引の地区（大字・町）と小地域の対応で、mart_trade_prices と
+        municipality_code・district_name で結合すると、取引ごとに小地域コードが付く。1つの地区は大字・町に
+        かかる小地域すべてと組になる（取引がその中のどこかは分からない）。oaza_count が1でない地区は決まっていない。
       synonyms: [地域統計, エリア指標, 町丁目別 地価, 地価 相場]
       examples:
         - 町丁目ごとの住宅地の地価を地図で塗りたい

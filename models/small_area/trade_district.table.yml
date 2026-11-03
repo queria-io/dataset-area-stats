@@ -1,0 +1,38 @@
+schema: small_area
+name: trade_district
+title: 不動産取引の地区と町丁目の対応
+description: |
+  不動産取引価格（reinfolib の mart_trade_prices）の地区と、国勢調査の小地域（e_stat の boundary.small_area）の対応。
+  1行が地区と小地域の1組。取引は位置を地区（大字・町）の名前までしか持たないので、地区名をアドレス・ベース・レジストリの
+  大字・町の名前に当て、その町字を japan_address_code の town_small_area で小地域につなぐ。
+  1つの地区は大字・町の範囲にかかる小地域すべてと組になる。取引がその中のどこかは分からない。
+  mart_trade_prices とは municipality_code と district_name の2つで結合する（どちらも mart_trade_prices の値のまま）。
+  地区名が住所の台帳に無い地区は key_code が空の1行になる。同じ名前の大字・町が市区町村に複数あるときは、
+  そのすべての小地域と組になり、oaza_count が2以上になる。
+  名前は「ヶ」と「ケ」、頭の「大字」「字」、末尾の丁目をそろえて比べる。
+  「不動産情報ライブラリ」（国土交通省）、「アドレス・ベース・レジストリ」（デジタル庁）、「国勢調査 町丁・字等別境界データ」（総務省統計局）を加工して作成。
+sources:
+  - path: https://www.reinfolib.mlit.go.jp/
+  - path: https://dataset.address-br.digital.go.jp/
+  - path: https://www.e-stat.go.jp/gis
+fields:
+  - name: municipality_code
+    title: 市区町村コード（取引の値のまま）
+    description: mart_trade_prices の municipality_code と同じ値。北海道などは先頭の0が落ちた4桁で入っている
+  - name: district_name
+    title: 地区名
+    description: mart_trade_prices の district_name と同じ値
+  - name: lg_code
+    title: 全国地方公共団体コード
+    description: 6桁（検査数字あり）。当てた大字・町の市区町村
+    extensions: { queria: { semantic: { role: entity, name: city } } }
+  - name: key_code
+    title: 小地域コード
+    description: e_stat の boundary.small_area と census 各表の key_code / area と同じ。当たらない地区は空
+    extensions: { queria: { semantic: { role: entity, name: small_area } } }
+  - name: town_code
+    title: 町コード
+    description: key_code の先頭9桁
+  - name: oaza_count
+    title: 当たった大字・町の数
+    description: 1なら地区は1つの大字・町に決まる。2以上は同じ名前の大字・町が市区町村に複数ある。0は当たらない
