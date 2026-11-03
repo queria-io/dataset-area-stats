@@ -1,4 +1,4 @@
-schema: small_area
+schema: land_price
 name: trade_district
 title: 不動産取引の地区と町丁目の対応
 description: |

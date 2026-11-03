@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: land_price
+  - name: land_price_small_area
     description: 町丁目ごとの地価の目安。地価公示・地価調査の地点の価格と、土地の取引の㎡単価を、国勢調査の小地域ごと・年ごとにまとめる。
     columns:
       - name: key_code

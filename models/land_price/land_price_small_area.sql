@@ -1,7 +1,9 @@
+{{ config(alias='small_area') }}
+
 {# 町丁目ごとの地価の目安。1 行が国勢調査の小地域 (e_stat.boundary.small_area) 1 つ × 1 年。
    地価公示・地価調査の地点も土地の取引も町丁目の数よりずっと少ないので、値は「町」
    (key_code の先頭 9 桁。丁目をまとめた単位) で集計し、同じ町の丁目には同じ値を入れる。
-   公示・調査の地点は位置で町に入れ、取引は地区（大字・町）の町すべてに入れる (trade_district) #}
+   公示・調査の地点は位置で町に入れ、取引は地区（大字・町）の町すべてに入れる (land_price.trade_district) #}
 
 -- 公開中の e_stat を HTTPS で読むので、2 か所から使う境界は 1 回だけ読む
 with small_area as materialized (
@@ -67,7 +69,7 @@ trade as (
 
 district_town as (
     select distinct municipality_code, district_name, town_code
-    from {{ ref('trade_district') }}
+    from {{ ref('land_price_trade_district') }}
     -- 同じ名前の大字・町が市区町村に複数あるときは、どちらの取引か決められないので使わない
     where town_code is not null and oaza_count = 1
 ),

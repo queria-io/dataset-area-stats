@@ -12,7 +12,7 @@
 
 元のデータセットがすでに地域コードで持っている値（国勢調査の小地域の人口など）は写しません。元のデータセットを読んでください。
 
-スキーマは地域の単位、表はテーマごとに 1 つです。
+スキーマはテーマ（地価なら `land_price`）、表は地域の単位（町丁目なら `small_area`）です。
 
 ## データ出典
 
@@ -26,12 +26,12 @@ Queria の公開データセット reinfolib・e_stat・address_br・japan_addre
 
 ## 収録テーブル
 
-### small_area.land_price
+### land_price.small_area
 
 町丁目ごとの地価の目安。1行が国勢調査の小地域（`e_stat.boundary.small_area`）1つ × 1年です。
 
 - 地価公示・地価調査の地点の価格と、土地だけの取引（宅地(土地)）の㎡単価を、町（key_code の先頭9桁。丁目をまとめた単位）ごとにまとめ、同じ町の丁目には同じ値を入れます
-- 地点は位置で町に入れます。取引は位置を地区（大字・町）までしか持たないので、`small_area.trade_district` で地区の町すべてに入れます。同じ名前の大字・町が市区町村に複数ある取引は入れません
+- 地点は位置で町に入れます。取引は位置を地区（大字・町）までしか持たないので、`land_price.trade_district` で地区の町すべてに入れます。同じ名前の大字・町が市区町村に複数ある取引は入れません
 - 取引の値はその年までの3年分です
 - 地点も取引も無い町丁目の行はありません。件数が少ない町の値は目安にならないので、件数と一緒に見てください
 
@@ -47,12 +47,12 @@ Queria の公開データセット reinfolib・e_stat・address_br・japan_addre
 ```sql
 -- 2025 年の新宿区の町丁目ごとの住宅地の地価
 SELECT key_code, area_name, residential_price_median, residential_point_count
-FROM area_stats.small_area.land_price
+FROM area_stats.land_price.small_area
 WHERE city_code = '13104' AND year = 2025
 ORDER BY key_code
 ```
 
-### small_area.trade_district
+### land_price.trade_district
 
 不動産取引価格（`reinfolib.main.mart_trade_prices`）の地区と小地域の対応。1行が地区と小地域の1組です。
 地区名をアドレス・ベース・レジストリの大字・町の名前に当て、その町字を `japan_address_code.main.town_small_area` で小地域につなぎます。
@@ -62,7 +62,7 @@ ORDER BY key_code
 -- 取引ごとに小地域コードを付ける（地区が 1 つの大字・町に決まるものだけ）
 SELECT t.*, d.key_code
 FROM reinfolib.main.mart_trade_prices AS t
-JOIN area_stats.small_area.trade_district AS d USING (municipality_code, district_name)
+JOIN area_stats.land_price.trade_district AS d USING (municipality_code, district_name)
 WHERE d.oaza_count = 1
 ```
 

@@ -1,11 +1,11 @@
-schema: small_area
-name: land_price
+schema: land_price
+name: small_area
 title: 町丁目別の地価
 description: |
   町丁目ごとの地価の目安。1行が国勢調査の小地域（e_stat の boundary.small_area）1つ × 1年。
   地価公示・地価調査の地点の価格（reinfolib の mart_land_prices）と、土地だけの取引の㎡単価（reinfolib の mart_trade_prices の 宅地(土地)）を
   町ごとにまとめる。町は key_code の先頭9桁で、丁目をまとめた単位。同じ町の丁目には同じ値が入る。
-  地点は位置で町に入れる。取引は位置を地区（大字・町）までしか持たないので、small_area.trade_district で地区を
+  地点は位置で町に入れる。取引は位置を地区（大字・町）までしか持たないので、land_price.trade_district で地区を
   小地域に当て、地区の町すべてに同じ取引を入れる。そのため trade_count を町をまたいで足すと取引の数より多くなる。
   地区名が住所の台帳に無い取引と、同じ名前の大字・町が市区町村に複数ある取引は入らない。
   取引の値はその年までの3年分をまとめる。取引の収録は2005年第3四半期からで、2005・2006年と最新の年は3年に満たない。

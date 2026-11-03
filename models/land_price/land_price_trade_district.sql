@@ -1,3 +1,5 @@
+{{ config(alias='trade_district') }}
+
 {# 不動産取引価格（reinfolib.main.mart_trade_prices）の地区と国勢調査の小地域の対応。
    取引は位置を地区名（大字・町）までしか持たない。地区名をアドレス・ベース・レジストリの
    大字・町の名前に当て、その町字を japan_address_code の対応表で小地域へつなぐ。

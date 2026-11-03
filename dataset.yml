@@ -43,8 +43,8 @@ spatial_coverage: [JP]
 update_frequency: monthly
 
 schemas:
-  - name: small_area
-    title: 町丁目（国勢調査の小地域）
+  - name: land_price
+    title: 地価
 
 extensions:
   queria:
@@ -53,14 +53,14 @@ extensions:
     ai_context:
       instructions: |
         地域ごとの数字を地図で塗る、町丁目どうしを比べる、商圏に入る町丁目の相場を見るときに使う。
-        スキーマは地域の単位（small_area など）で、表はテーマごとに 1 つ。key_code は e_stat の
+        スキーマはテーマ（land_price など）で、表は地域の単位（small_area など）。key_code は e_stat の
         boundary.small_area と census 各表の key_code / area と同じなので、そのまま結合できる。
-        small_area.land_price は町丁目ごとの地価の目安で、1行が小地域×年。地価公示・地価調査の地点の
+        land_price.small_area は町丁目ごとの地価の目安で、1行が小地域×年。地価公示・地価調査の地点の
         価格と土地の取引の㎡単価の中央値を町（key_code の先頭9桁）ごとにまとめ、同じ町の丁目に同じ値を入れる。
         住宅地と商業地は桁が違うので residential_price_median / commercial_price_median を分けて見る。
         取引の値はその年までの3年分。件数（land_point_count・trade_count）が少ない町は目安にしない。
         個々の地点や取引を見るときは reinfolib の mart_land_prices・mart_trade_prices を使う。
-        small_area.trade_district は取引の地区（大字・町）と小地域の対応で、mart_trade_prices と
+        land_price.trade_district は取引の地区（大字・町）と小地域の対応で、mart_trade_prices と
         municipality_code・district_name で結合すると、取引ごとに小地域コードが付く。1つの地区は大字・町に
         かかる小地域すべてと組になる（取引がその中のどこかは分からない）。oaza_count が1でない地区は決まっていない。
       synonyms: [地域統計, エリア指標, 町丁目別 地価, 地価 相場]
