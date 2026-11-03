@@ -90,14 +90,27 @@ district_exact as (
     join town t on t.city_code = d.city_code and t.town_name = d.district_name
 ),
 
-district_town as (
-    select * from district_exact
-    union all
+district_prefix as (
     -- 1 つの町に地区名で始まる名前が複数あっても、町には 1 回だけ入れる
     select distinct d.city_code, d.district_name, t.town_code
     from district d
     join town t on t.city_code = d.city_code and starts_with(t.town_name, d.district_name)
     anti join district_exact e on e.city_code = d.city_code and e.district_name = d.district_name
+    -- 「東」のような 1 文字の地区名や、多くの町に当たる地区名は関係ない町にまで広がるので使わない
+    where length(d.district_name) >= 2
+),
+
+district_town as (
+    select * from district_exact
+    union all
+    select p.*
+    from district_prefix p
+    semi join (
+        select city_code, district_name
+        from district_prefix
+        group by all
+        having count(*) <= 5
+    ) k using (city_code, district_name)
 ),
 
 years as (
