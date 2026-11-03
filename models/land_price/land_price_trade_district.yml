@@ -1,0 +1,12 @@
+version: 2
+
+models:
+  - name: land_price_trade_district
+    description: 不動産取引価格の地区（大字・町）と国勢調査の小地域の対応。
+    columns:
+      - name: municipality_code
+      - name: district_name
+      - name: lg_code
+      - name: key_code
+      - name: town_code
+      - name: oaza_count
