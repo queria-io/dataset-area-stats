@@ -1,0 +1,48 @@
+schema: hellowork
+name: municipality
+title: 市区町村ごとの管轄ハローワーク
+description: |-
+  公共職業安定所（ハローワーク）の管轄区域を市区町村に当てたものです。1 行が市区町村と安定所の 1 組です。
+
+  - 1 つの市区町村を複数の安定所が受け持つことがあります。市区町村の一部だけを受け持つ行は coverage が partial です
+  - 出張所・分室（office_kind が branch・annex）の管轄は本所の管轄の一部で、本所の行と同じ市区町村に当たることがあります
+  - 安定所の所在地は mhlw の hellowork.office と office_name・office_kind・prefecture_code で結合します
+  - 管轄一覧表に合併・改称の前の名前が残っている市区町村（丹波篠山市など）は当たらず、行がありません
+sources:
+  - path: https://www.mhlw.go.jp/kouseiroudoushou/shozaiannai/roudoukyoku/index.html
+  - path: https://dataset.address-br.digital.go.jp/
+fields:
+  - name: lg_code
+    title: 全国地方公共団体コード
+    description: 6 桁。政令指定都市は区のコード
+    extensions: { queria: { semantic: { role: entity, name: city } } }
+  - name: city_code
+    title: 市区町村コード
+    description: lg_code の先頭 5 桁
+  - name: prefecture_code
+    title: 都道府県コード
+    extensions: { queria: { semantic: { role: entity, name: prefecture } } }
+  - name: prefecture_name
+    title: 都道府県名
+  - name: county_name
+    title: 郡名
+  - name: city_name
+    title: 市区町村名
+  - name: ward_name
+    title: 区名
+    description: 政令指定都市の区
+  - name: office_name
+    title: 安定所名
+    description: mhlw の hellowork.office・hellowork.jurisdiction と同じ値
+  - name: office_kind
+    title: 種類
+    description: main=本所、branch=出張所、annex=分室
+  - name: coverage
+    title: 管轄の範囲
+    description: full=市区町村の全域、partial=市区町村の一部（「のうち」や「を除く」の付いた項目）
+  - name: item_order
+    title: 項目の順
+    description: mhlw の hellowork.jurisdiction_area の item_order
+  - name: area_text
+    title: 管轄区域の項目
+    description: 当てた管轄一覧表の項目（例 稲敷郡のうち阿見町）

@@ -50,3 +50,7 @@ area_stats:
           alias: japan_address_code
           is_ducklake: true
           read_only: true
+        - path: "ducklake:https://data.queria.io/datasets/queria/mhlw/ducklake.duckdb"
+          alias: mhlw
+          is_ducklake: true
+          read_only: true
