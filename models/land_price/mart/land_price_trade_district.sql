@@ -11,7 +11,7 @@ with district as (
         lpad(municipality_code, 5, '0') as city_code,
         district_name,
         {{ normalize_town_name("district_name") }} as name
-    from reinfolib.main.mart_trade_prices
+    from {{ ref('stg_reinfolib_trade_prices') }}
     where coalesce(district_name, '') not in ('', '（大字なし）')
 ),
 
@@ -23,7 +23,7 @@ oaza as (
         machiaza_id,
         {{ normalize_town_name("oaza_cho") }} as name,
         left(machiaza_id, 4) as oaza_id
-    from address_br.main.mart_town
+    from {{ ref('stg_address_br_town') }}
     where oaza_cho is not null
       and status_flg <> '3'
 ),
@@ -45,7 +45,7 @@ oaza_count as (
 small_area as (
     select distinct m.municipality_code, m.district_name, m.lg_code, s.key_code
     from matched m
-    join japan_address_code.main.town_small_area s using (lg_code, machiaza_id)
+    join {{ ref('stg_japan_address_code_town_small_area') }} s using (lg_code, machiaza_id)
     where s.key_code is not null
 )
 

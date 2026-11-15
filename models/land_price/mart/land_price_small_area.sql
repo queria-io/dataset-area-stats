@@ -14,7 +14,7 @@ with small_area as materialized (
         left(key_code, 9) as town_code,
         area_name,
         geometry
-    from e_stat.boundary.small_area
+    from {{ ref('stg_e_stat_small_area') }}
     -- 町丁・字等は 9 桁、その内訳は 11 桁。2 桁 (都道府県コードだけ) の行は名前の無い水面などで、
     -- 先頭 9 桁が町にならず、別の市区町村の形が 1 つの「町」にまとまってしまう
     where length(key_code) in (9, 11)
@@ -23,7 +23,7 @@ with small_area as materialized (
 -- 地価公示・地価調査。mart_land_prices も HTTPS で読み 3 か所から使うので、使う列を 1 回だけ読む
 land_price_row as materialized (
     select longitude, latitude, year, current_price, change_rate, use_category
-    from reinfolib.main.mart_land_prices
+    from {{ ref('stg_reinfolib_land_prices') }}
 ),
 
 -- 地点を位置で町丁目に入れる。同じ地点が年ごとに並ぶので、位置だけ先に解く
@@ -62,7 +62,7 @@ land as (
 -- 取引は位置を地区（大字・町）までしか持たないので、地区の町すべてに入れる（trade_district）
 trade as (
     select municipality_code, district_name, year, unit_price
-    from reinfolib.main.mart_trade_prices
+    from {{ ref('stg_reinfolib_trade_prices') }}
     where property_type = '宅地(土地)'
       and unit_price > 0
 ),

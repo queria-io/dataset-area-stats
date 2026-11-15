@@ -27,7 +27,7 @@ with city as (
         translate(coalesce(ward_name, ''), 'ヶヵ', 'ケカ') as ward_key,
         translate(coalesce(county_name, ''), 'ヶヵ', 'ケカ') as county_key,
         bool_or(ward_name is not null) over (partition by pref_name, city_name) as in_designated_city
-    from address_br.main.mart_city
+    from {{ ref('stg_address_br_city') }}
     where lg_code is not null
 ),
 
@@ -67,7 +67,7 @@ single as (
 -- 市区町村の町・字（大字・町）の名前。「Xのうち」の後ろの項目が町・字かどうかを見る
 town as (
     select distinct lg_code, translate(oaza_cho, 'ヶヵ', 'ケカ') as name
-    from address_br.main.mart_town
+    from {{ ref('stg_address_br_town') }}
     where oaza_cho is not null
 ),
 
@@ -82,7 +82,7 @@ items as (
         j.area_text,
         j.item_order * 100 + u.sub_order as seq,
         u.parts[u.sub_order] as t
-    from mhlw.hellowork.jurisdiction_area j,
+    from {{ ref('stg_hellowork_jurisdiction_area') }} j,
         (
             select
                 string_split(translate(j.area_text, 'ヶヵ（）《》〈〉，、', 'ケカ()()(),,'), ' ') as parts,
