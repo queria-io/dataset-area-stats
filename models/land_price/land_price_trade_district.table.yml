@@ -2,6 +2,8 @@ schema: land_price
 name: trade_district
 title: 不動産取引の地区と町丁目の対応
 description: |-
+  japan_address_code の main.trade_district_small_area に移しました。この表は 2026 年 12 月末に削除します。
+
   不動産取引価格（reinfolib の mart_trade_prices）の地区と、国勢調査の小地域の対応です。1 行が地区と小地域の 1 組です。
 
   - mart_trade_prices とは municipality_code と district_name で結合します
