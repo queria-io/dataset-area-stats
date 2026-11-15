@@ -2,6 +2,8 @@ schema: hellowork
 name: municipality
 title: 市区町村ごとの管轄ハローワーク
 description: |-
+  japan_address_code の main.hellowork_city に移しました。この表は 2026 年 12 月末に削除します。
+
   公共職業安定所（ハローワーク）の管轄区域を市区町村に当てたものです。1 行が市区町村と安定所の 1 組です。
 
   - 1 つの市区町村を複数の安定所が受け持つことがあります。市区町村の一部だけを受け持つ行は coverage が partial です
