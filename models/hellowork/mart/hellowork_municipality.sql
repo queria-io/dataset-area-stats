@@ -15,4 +15,4 @@ select
     coverage,
     item_order,
     area_text
-from japan_address_code.main.hellowork_city
+from {{ ref('stg_japan_address_code_hellowork_city') }}

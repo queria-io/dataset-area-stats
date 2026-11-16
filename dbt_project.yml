@@ -14,3 +14,11 @@ models:
   area_stats:
     +database: area_stats
     +materialized: table
+    # 他のデータセットの表を読む stg。ビューにすると利用者の手元に無いカタログを指し、
+    # テーブルにすると同じ行を 2 重に持つので、ephemeral にする
+    hellowork:
+      stg:
+        +materialized: ephemeral
+    land_price:
+      stg:
+        +materialized: ephemeral
