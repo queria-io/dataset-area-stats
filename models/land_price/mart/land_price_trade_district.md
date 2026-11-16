@@ -1,5 +1,6 @@
-schema: land_price
-name: trade_district
+---
+$schema: https://queria.io/schemas/table/v1.json
+table: land_price.trade_district
 title: 不動産取引の地区と町丁目の対応
 description: |-
   japan_address_code の main.trade_district_small_area に移しました。この表は 2026 年 12 月末に削除します。
@@ -23,14 +24,15 @@ fields:
   - name: lg_code
     title: 全国地方公共団体コード
     description: 6 桁。当てた大字・町の市区町村
-    extensions: { queria: { semantic: { role: entity, name: city } } }
+    semantic: {role: entity, name: city}
   - name: key_code
     title: 小地域コード
     description: e_stat の境界・国勢調査と同じ。当たらない地区は空
-    extensions: { queria: { semantic: { role: entity, name: small_area } } }
+    semantic: {role: entity, name: small_area}
   - name: town_code
     title: 町コード
     description: key_code の先頭 9 桁
   - name: oaza_count
     title: 当たった大字・町の数
     description: 1 なら大字・町が 1 つに決まります。0 は当たらない地区
+---

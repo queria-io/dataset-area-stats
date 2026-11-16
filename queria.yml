@@ -1,0 +1,69 @@
+$schema: https://queria.io/schemas/dataset/v1.json
+name: area_stats
+title: 地域ごとの指標
+description: |-
+  町丁目・市区町村などの地域ごとの指標です。地点の値を地域にまとめたものを収録しています。
+
+  出典：「不動産情報ライブラリ」（国土交通省）、「国勢調査 町丁・字等別境界データ」（総務省統計局）、「アドレス・ベース・レジストリ」（デジタル庁）、「都道府県労働局所在地一覧」（厚生労働省）。Queria が加工したものです。
+keywords:
+  - 地域
+  - 町丁目
+  - 小地域
+  - 地価
+  - ハローワーク
+homepage: https://github.com/queria-io/dataset-area-stats
+language: ja
+licenses:
+  - JP-GOV-STD-2.0
+  - JP-DIGITAL-ADDRESS-BR
+
+sources:
+  - title: 不動産情報ライブラリ（国土交通省）
+    path: https://www.reinfolib.mlit.go.jp/
+  - title: 国勢調査 町丁・字等別境界データ（総務省統計局）
+    path: https://www.e-stat.go.jp/gis
+  - title: アドレス・ベース・レジストリ（デジタル庁）
+    path: https://dataset.address-br.digital.go.jp/
+  - title: 都道府県労働局（労働基準監督署、公共職業安定所）所在地一覧（厚生労働省）
+    path: https://www.mhlw.go.jp/kouseiroudoushou/shozaiannai/roudoukyoku/index.html
+
+contributors:
+  - title: 国土交通省
+    path: https://www.mlit.go.jp/
+    roles: [rightsHolder]
+  - title: 総務省統計局
+    path: https://www.stat.go.jp/
+    roles: [rightsHolder]
+  - title: デジタル庁
+    path: https://www.digital.go.jp/
+    roles: [rightsHolder]
+  - title: 厚生労働省
+    path: https://www.mhlw.go.jp/
+    roles: [rightsHolder]
+
+spatial_coverage: [JP]
+update_frequency: monthly
+schemas:
+  - name: land_price
+    title: 地価
+  - name: hellowork
+    title: ハローワーク
+
+themes: [housing_land, labour]
+cover: 🗾
+ai_context:
+  instructions: |
+    地域ごとの数字を地図で塗る、町丁目どうしを比べる、商圏に入る町丁目の相場を見るときに使う。
+    スキーマはテーマ（land_price など）で、表は地域の単位（small_area など）。key_code は e_stat の
+    boundary.small_area と census 各表の key_code / area と同じなので、そのまま結合できる。
+    land_price.small_area は町丁目ごとの地価の目安で、1行が小地域×年。地価公示・地価調査の地点の
+    価格と土地の取引の㎡単価の中央値を町（key_code の先頭9桁）ごとにまとめ、同じ町の丁目に同じ値を入れる。
+    住宅地と商業地は桁が違うので residential_price_median / commercial_price_median を分けて見る。
+    取引の値はその年までの3年分。件数（land_point_count・trade_count）が少ない町は目安にしない。
+    個々の地点や取引を見るときは reinfolib の mart_land_prices・mart_trade_prices を使う。
+    land_price.trade_district と hellowork.municipality は japan_address_code の main.trade_district_small_area・
+    main.hellowork_city に移したので、そちらを使う。
+  synonyms: [地域統計, エリア指標, 町丁目別 地価, 地価 相場]
+  examples:
+    - 町丁目ごとの住宅地の地価を地図で塗りたい
+    - 駅の周りの町丁目の土地の相場を比べたい

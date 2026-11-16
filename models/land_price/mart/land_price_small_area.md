@@ -1,5 +1,6 @@
-schema: land_price
-name: small_area
+---
+$schema: https://queria.io/schemas/table/v1.json
+table: land_price.small_area
 title: 町丁目別の地価
 description: |-
   町丁目ごとの地価の目安です。1 行が国勢調査の小地域 1 つの 1 年です。
@@ -14,13 +15,13 @@ fields:
   - name: key_code
     title: 小地域コード
     description: e_stat の境界・国勢調査のテーブルと同じ
-    extensions: { queria: { semantic: { role: entity, name: small_area } } }
+    semantic: {role: entity, name: small_area}
   - name: prefecture_code
     title: 都道府県コード
-    extensions: { queria: { semantic: { role: entity, name: prefecture } } }
+    semantic: {role: entity, name: prefecture}
   - name: city_code
     title: 市区町村コード
-    extensions: { queria: { semantic: { role: entity, name: city } } }
+    semantic: {role: entity, name: city}
   - name: town_code
     title: 町コード
     description: key_code の先頭 9 桁。値はこの単位でまとめています
@@ -54,3 +55,4 @@ fields:
   - name: trade_unit_price_median
     title: 土地の取引の㎡単価の中央値
     description: 円/㎡。その年までの 3 年分
+---
