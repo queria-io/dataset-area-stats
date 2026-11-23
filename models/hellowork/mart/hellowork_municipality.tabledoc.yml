@@ -14,13 +14,13 @@ columns:
   - name: lg_code
     title: 全国地方公共団体コード
     description: 6 桁。政令指定都市は区のコード
-    entity: {type: foreign, name: city}
+    entity: city
   - name: city_code
     title: 市区町村コード
     description: lg_code の先頭 5 桁
   - name: prefecture_code
     title: 都道府県コード
-    entity: {type: foreign, name: prefecture}
+    entity: prefecture
   - name: prefecture_name
     title: 都道府県名
   - name: county_name

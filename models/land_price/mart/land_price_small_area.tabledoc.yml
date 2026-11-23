@@ -11,13 +11,13 @@ columns:
   - name: key_code
     title: 小地域コード
     description: e_stat の境界・国勢調査のテーブルと同じ
-    entity: {type: foreign, name: small_area}
+    entity: small_area
   - name: prefecture_code
     title: 都道府県コード
-    entity: {type: foreign, name: prefecture}
+    entity: prefecture
   - name: city_code
     title: 市区町村コード
-    entity: {type: foreign, name: city}
+    entity: city
   - name: town_code
     title: 町コード
     description: key_code の先頭 9 桁。値はこの単位でまとめています
