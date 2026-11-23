@@ -21,33 +21,33 @@ licenses:
 sources:
   - id: reinfolib
     title: 不動産情報ライブラリ（国土交通省）
-    path: https://www.reinfolib.mlit.go.jp/
+    url: https://www.reinfolib.mlit.go.jp/
   - id: gis
     title: 国勢調査 町丁・字等別境界データ（総務省統計局）
-    path: https://www.e-stat.go.jp/gis
+    url: https://www.e-stat.go.jp/gis
   - id: dataset
     title: アドレス・ベース・レジストリ（デジタル庁）
-    path: https://dataset.address-br.digital.go.jp/
+    url: https://dataset.address-br.digital.go.jp/
   - id: roudoukyoku
     title: 都道府県労働局（労働基準監督署、公共職業安定所）所在地一覧（厚生労働省）
-    path: https://www.mhlw.go.jp/kouseiroudoushou/shozaiannai/roudoukyoku/index.html
+    url: https://www.mhlw.go.jp/kouseiroudoushou/shozaiannai/roudoukyoku/index.html
 
 contributors:
   - id: mlit
     title: 国土交通省
-    path: https://www.mlit.go.jp/
+    url: https://www.mlit.go.jp/
     roles: [rightsHolder]
   - id: stat
     title: 総務省統計局
-    path: https://www.stat.go.jp/
+    url: https://www.stat.go.jp/
     roles: [rightsHolder]
   - id: digital
     title: デジタル庁
-    path: https://www.digital.go.jp/
+    url: https://www.digital.go.jp/
     roles: [rightsHolder]
   - id: mhlw
     title: 厚生労働省
-    path: https://www.mhlw.go.jp/
+    url: https://www.mhlw.go.jp/
     roles: [rightsHolder]
 
 spatial_coverage: [JP]
