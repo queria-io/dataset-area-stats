@@ -1,6 +1,4 @@
----
-$schema: https://queria.io/schemas/table/v1.json
-table: land_price.small_area
+$schema: https://tabledoc.queria.io/schemas/table/v1.json
 title: 町丁目別の地価
 description: |-
   町丁目ごとの地価の目安です。1 行が国勢調査の小地域 1 つの 1 年です。
@@ -8,20 +6,18 @@ description: |-
   - 値は町（key_code の先頭 9 桁）ごとにまとめていて、同じ町の丁目には同じ値が入ります
   - 取引の値はその年までの 3 年分です。trade_count を町をまたいで合計すると取引の数より多くなります
   - 件数が少ない町の値は目安になりません。land_point_count と trade_count と一緒に見てください
-sources:
-  - path: https://www.reinfolib.mlit.go.jp/
-  - path: https://www.e-stat.go.jp/gis
-fields:
+sources: [reinfolib, gis]
+columns:
   - name: key_code
     title: 小地域コード
     description: e_stat の境界・国勢調査のテーブルと同じ
-    semantic: {role: entity, name: small_area}
+    entity: {type: foreign, name: small_area}
   - name: prefecture_code
     title: 都道府県コード
-    semantic: {role: entity, name: prefecture}
+    entity: {type: foreign, name: prefecture}
   - name: city_code
     title: 市区町村コード
-    semantic: {role: entity, name: city}
+    entity: {type: foreign, name: city}
   - name: town_code
     title: 町コード
     description: key_code の先頭 9 桁。値はこの単位でまとめています
@@ -55,4 +51,3 @@ fields:
   - name: trade_unit_price_median
     title: 土地の取引の㎡単価の中央値
     description: 円/㎡。その年までの 3 年分
----
