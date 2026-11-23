@@ -1,6 +1,4 @@
----
-$schema: https://queria.io/schemas/table/v1.json
-table: land_price.trade_district
+$schema: https://tabledoc.queria.io/schemas/table/v1.json
 title: 不動産取引の地区と町丁目の対応
 description: |-
   japan_address_code の main.trade_district_small_area に移しました。この表は 2026 年 12 月末に削除します。
@@ -10,11 +8,8 @@ description: |-
   - mart_trade_prices とは municipality_code と district_name で結合します
   - 1 つの地区は大字・町にかかる小地域すべてと組になります
   - oaza_count が 1 以外の地区は、大字・町を 1 つに決められていません
-sources:
-  - path: https://www.reinfolib.mlit.go.jp/
-  - path: https://dataset.address-br.digital.go.jp/
-  - path: https://www.e-stat.go.jp/gis
-fields:
+sources: [reinfolib, dataset, gis]
+columns:
   - name: municipality_code
     title: 市区町村コード（取引の値のまま）
     description: mart_trade_prices と同じ値。先頭の 0 が落ちた 4 桁のことがあります
@@ -24,15 +19,14 @@ fields:
   - name: lg_code
     title: 全国地方公共団体コード
     description: 6 桁。当てた大字・町の市区町村
-    semantic: {role: entity, name: city}
+    entity: {type: foreign, name: city}
   - name: key_code
     title: 小地域コード
     description: e_stat の境界・国勢調査と同じ。当たらない地区は空
-    semantic: {role: entity, name: small_area}
+    entity: {type: foreign, name: small_area}
   - name: town_code
     title: 町コード
     description: key_code の先頭 9 桁
   - name: oaza_count
     title: 当たった大字・町の数
     description: 1 なら大字・町が 1 つに決まります。0 は当たらない地区
----
