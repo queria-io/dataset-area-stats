@@ -36,9 +36,11 @@ columns:
   - name: office_kind
     title: 種類
     description: main=本所、branch=出張所、annex=分室
+    dimension: categorical
   - name: coverage
     title: 管轄の範囲
     description: full=市区町村の全域、partial=市区町村の一部（「のうち」や「を除く」の付いた項目）
+    dimension: categorical
   - name: item_order
     title: 項目の順
     description: mhlw の hellowork.jurisdiction_area の item_order
